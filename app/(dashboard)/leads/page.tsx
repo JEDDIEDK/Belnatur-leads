@@ -3,8 +3,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getLeads } from "@/lib/data";
 import { profiles } from "@/lib/demo-data";
 
-export default function LeadsPage() {
+export default async function LeadsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const params = await searchParams;
   const leads = getLeads();
+  const initialQuery = params.q ?? "";
 
   return (
     <div className="space-y-6">
@@ -33,7 +39,7 @@ export default function LeadsPage() {
         </CardContent>
       </Card>
 
-      <LeadsTable leads={leads} employees={profiles} />
+      <LeadsTable leads={leads} employees={profiles} initialQuery={initialQuery} />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Bell, LayoutDashboard, Settings, Users2 } from "lucide-react";
+import { BelnaturLogo } from "@/components/belnatur-logo";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -19,8 +20,8 @@ export function Sidebar() {
   return (
     <aside className="glass-panel hidden w-72 shrink-0 rounded-[2rem] p-5 lg:block">
       <div className="mb-10 px-3">
-        <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">Belnatur</p>
-        <h1 className="mt-3 font-serif text-4xl text-foreground">Leads Atelier</h1>
+        <BelnaturLogo className="h-auto w-[180px] object-contain opacity-90" />
+        <h1 className="mt-5 font-serif text-4xl text-foreground">Leads Atelier</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
           Et eksklusivt arbejdsrum til Meta leads, opfølgning og premium kunderejser.
         </p>

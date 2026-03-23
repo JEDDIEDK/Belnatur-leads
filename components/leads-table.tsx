@@ -26,12 +26,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface LeadsTableProps {
   leads: LeadWithRelations[];
   employees: Profile[];
+  initialQuery?: string;
 }
 
-export function LeadsTable({ leads, employees }: LeadsTableProps) {
-  const [globalFilter, setGlobalFilter] = React.useState("");
+export function LeadsTable({ leads, employees, initialQuery = "" }: LeadsTableProps) {
+  const [globalFilter, setGlobalFilter] = React.useState(initialQuery);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [campaignFilter, setCampaignFilter] = React.useState("all");
+
+  React.useEffect(() => {
+    setGlobalFilter(initialQuery);
+  }, [initialQuery]);
 
   const filteredLeads = React.useMemo(() => {
     return leads.filter((lead) => {

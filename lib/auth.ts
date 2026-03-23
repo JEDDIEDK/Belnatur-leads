@@ -25,13 +25,6 @@ export async function requireAuth() {
   return session;
 }
 
-export async function signOutAction() {
-  "use server";
-  const store = await cookies();
-  store.delete(SESSION_COOKIE);
-  redirect("/login");
-}
-
 export async function signInAction(formData: FormData) {
   "use server";
   const store = await cookies();

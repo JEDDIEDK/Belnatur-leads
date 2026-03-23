@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { da } from "date-fns/locale";
 import { Bell, Search } from "lucide-react";
@@ -9,15 +13,29 @@ import { Input } from "@/components/ui/input";
 import type { Profile } from "@/types";
 
 export function Topbar({ user }: { user: Profile }) {
+  const router = useRouter();
   const notifications = getNotifications();
   const unread = notifications.filter((item) => !item.read).length;
+  const [query, setQuery] = useState("");
+
+  function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmed = query.trim();
+    const target = trimmed ? `/leads?q=${encodeURIComponent(trimmed)}` : "/leads";
+    router.push(target);
+  }
 
   return (
     <header className="glass-panel flex flex-col gap-4 rounded-[2rem] p-4 md:flex-row md:items-center md:justify-between">
-      <div className="relative w-full max-w-xl">
+      <form className="relative w-full max-w-xl" onSubmit={handleSearchSubmit}>
         <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Søg på navn, telefon, mail eller kampagne" className="pl-11" />
-      </div>
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Søg på navn, telefon, mail eller kampagne"
+          className="pl-11"
+        />
+      </form>
 
       <div className="flex items-center gap-3 self-end md:self-auto">
         <DropdownMenu>
