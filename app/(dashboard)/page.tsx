@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { format } from "date-fns";
 import { da } from "date-fns/locale";
 import { ArrowRight, CalendarClock, Sparkles } from "lucide-react";
@@ -62,7 +63,9 @@ export default function DashboardPage() {
               <CardTitle>Seneste leads</CardTitle>
               <CardDescription>De nyeste henvendelser, klar til første kontakt.</CardDescription>
             </div>
-            <Button variant="ghost">Se alle <ArrowRight className="ml-2 h-4 w-4" /></Button>
+            <Button variant="ghost" asChild>
+              <Link href="/leads">Se alle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
           </CardHeader>
           <CardContent className="space-y-3">
             {latest.map((lead) => (

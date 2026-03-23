@@ -1,5 +1,6 @@
 import { profiles } from "@/lib/demo-data";
 import { leadStatuses, nextActionOptions } from "@/lib/constants";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export default function SettingsPage() {
             </div>
             <div className="mt-4 flex gap-3">
               <Button>Gem præferencer</Button>
-              <Button variant="secondary">Skift tema</Button>
+              <ThemeToggle />
             </div>
           </div>
         </CardContent>

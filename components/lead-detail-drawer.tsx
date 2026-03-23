@@ -133,7 +133,15 @@ export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations;
 
             <div className="flex flex-wrap gap-3">
               <Button type="submit">Gem ændringer</Button>
-              <Button type="button" variant="secondary" onClick={() => toast.message("Lead markeret som kontaktet")}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  toast.success("Lead markeret som kontaktet", {
+                    description: "Statusændringen er registreret i demo-flowet."
+                  })
+                }
+              >
                 Marker som kontaktet
               </Button>
             </div>

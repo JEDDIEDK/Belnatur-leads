@@ -1,3 +1,6 @@
+"use client";
+
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,12 +16,20 @@ export default function ForgotPasswordPage() {
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
             Denne side er klar til at blive koblet på Supabase reset password flow.
           </p>
-          <form className="mt-6 space-y-4">
+          <form
+            className="mt-6 space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              toast.success("Reset-link sendt", {
+                description: "Flowet er demo-klar og kan kobles direkte til Supabase."
+              });
+            }}
+          >
             <div className="space-y-2">
               <Label htmlFor="reset-email">E-mail</Label>
               <Input id="reset-email" type="email" placeholder="navn@belnatur.dk" />
             </div>
-            <Button type="button" className="w-full">Send link</Button>
+            <Button type="submit" className="w-full">Send link</Button>
           </form>
         </CardContent>
       </Card>

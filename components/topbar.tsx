@@ -2,6 +2,7 @@ import { formatDistanceToNow } from "date-fns";
 import { da } from "date-fns/locale";
 import { Bell, Search } from "lucide-react";
 import { getNotifications } from "@/lib/data";
+import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ export function Topbar({ user }: { user: Profile }) {
           <p className="text-sm font-medium">{user.full_name}</p>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{user.role}</p>
         </div>
+        <SignOutButton />
       </div>
     </header>
   );
