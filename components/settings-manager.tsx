@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BellRing, Check, Mail, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import { useAuditLog } from "@/hooks/use-audit-log";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { statusColorPresets, type StatusColorPreset } from "@/lib/status-colors";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -12,8 +13,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function SettingsManager() {
+export function SettingsManager({ actorName }: { actorName: string }) {
   const { settings, ready, saveSettings, resetSettings } = useAppSettings();
+  const { log } = useAuditLog();
   const [statusDraft, setStatusDraft] = useState("");
   const [actionDraft, setActionDraft] = useState("");
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
@@ -60,6 +62,7 @@ export function SettingsManager() {
       return;
     }
     updateStatuses([...settings.statuses, next]);
+    log({ actor: actorName, action: "Status tilføjet", context: next });
     setStatusDraft("");
     toast.success("Status tilføjet");
   }
@@ -72,6 +75,7 @@ export function SettingsManager() {
       return;
     }
     updateActions([...settings.nextActions, next]);
+    log({ actor: actorName, action: "Næste handling tilføjet", context: next });
     setActionDraft("");
     toast.success("Næste handling tilføjet");
   }
@@ -92,6 +96,7 @@ export function SettingsManager() {
     statusColors[next] = statusColors[previous] ?? "sand";
     delete statusColors[previous];
     saveSettings({ ...settings, statuses, statusColors });
+    log({ actor: actorName, action: "Status opdateret", context: `${previous} -> ${next}` });
     setEditingStatus(null);
     setEditDraft("");
     toast.success("Status opdateret");
@@ -112,6 +117,7 @@ export function SettingsManager() {
       ...settings,
       nextActions: settings.nextActions.map((action) => (action === previous ? next : action))
     });
+    log({ actor: actorName, action: "Næste handling opdateret", context: `${previous} -> ${next}` });
     setEditingAction(null);
     setEditDraft("");
     toast.success("Næste handling opdateret");
@@ -134,6 +140,7 @@ export function SettingsManager() {
         [key]: next
       }
     });
+    log({ actor: actorName, action: "Notifikationstekst opdateret", context: next });
     setEditingNotification(null);
     setEditDraft("");
     toast.success("Notifikationstekst opdateret");
@@ -146,6 +153,11 @@ export function SettingsManager() {
         ...settings.notifications,
         [key]: !settings.notifications[key]
       }
+    });
+    log({
+      actor: actorName,
+      action: "Notifikation ændret",
+      context: `${settings.notificationLabels[key]}: ${!settings.notifications[key] ? "Til" : "Fra"}`
     });
   }
 
@@ -177,15 +189,16 @@ export function SettingsManager() {
           onSaveEdit={(item) => renameStatus(item, editDraft)}
           editDraft={editDraft}
           setEditDraft={setEditDraft}
-          onColorChange={(item, color) =>
+          onColorChange={(item, color) => {
             saveSettings({
               ...settings,
               statusColors: {
                 ...settings.statusColors,
                 [item]: color
               }
-            })
-          }
+            });
+            log({ actor: actorName, action: "Statusfarve ændret", context: `${item}: ${color}` });
+          }}
           placeholder="Tilføj ny status"
         />
 
@@ -325,6 +338,7 @@ export function SettingsManager() {
               variant="ghost"
               onClick={() => {
                 resetSettings();
+                log({ actor: actorName, action: "Indstillinger nulstillet" });
                 toast.success("Indstillinger nulstillet");
               }}
             >

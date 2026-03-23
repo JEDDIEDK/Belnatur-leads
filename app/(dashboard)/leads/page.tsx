@@ -1,3 +1,4 @@
+import { requireAuth } from "@/lib/auth";
 import { LeadsTable } from "@/components/leads-table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getLeads } from "@/lib/data";
@@ -8,6 +9,7 @@ export default async function LeadsPage({
 }: {
   searchParams: Promise<{ q?: string }>;
 }) {
+  const user = await requireAuth();
   const params = await searchParams;
   const leads = getLeads();
   const initialQuery = params.q ?? "";
@@ -39,7 +41,7 @@ export default async function LeadsPage({
         </CardContent>
       </Card>
 
-      <LeadsTable leads={leads} employees={profiles} initialQuery={initialQuery} />
+      <LeadsTable leads={leads} employees={profiles} initialQuery={initialQuery} actorName={user.full_name} />
     </div>
   );
 }

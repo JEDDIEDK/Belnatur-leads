@@ -2,6 +2,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { da } from "date-fns/locale";
 import { ArrowRight, CalendarClock, Sparkles } from "lucide-react";
+import { requireAuth } from "@/lib/auth";
 import { CampaignChart, VolumeChart } from "@/components/chart-card";
 import { KpiCard } from "@/components/kpi-card";
 import { LeadDetailDrawerCard } from "@/components/lead-detail-drawer";
@@ -12,8 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { getCampaignPerformance, getDashboardKpis, getLatestLeads, getSessionUser, getUpcomingReminders } from "@/lib/data";
 import { profiles } from "@/lib/demo-data";
 
-export default function DashboardPage() {
-  const user = getSessionUser();
+export default async function DashboardPage() {
+  const user = await requireAuth();
   const kpis = getDashboardKpis();
   const performance = getCampaignPerformance();
   const latest = getLatestLeads();
@@ -94,7 +95,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {reminders.map((lead) => (
-              <LeadDetailDrawerCard key={lead.id} lead={lead} employees={profiles}>
+              <LeadDetailDrawerCard key={lead.id} lead={lead} employees={profiles} actorName={user.full_name}>
                 <button
                   type="button"
                   className="w-full rounded-[1.5rem] border border-border/70 bg-white/60 p-4 text-left transition hover:bg-white/80"

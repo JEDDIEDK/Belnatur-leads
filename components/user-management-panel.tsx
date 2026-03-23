@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ShieldPlus, UserCog } from "lucide-react";
 import { toast } from "sonner";
 import { profiles } from "@/lib/demo-data";
+import { useAuditLog } from "@/hooks/use-audit-log";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import type { UserRole } from "@/types";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function UserManagementPanel() {
+export function UserManagementPanel({ actorName }: { actorName: string }) {
   const { settings, ready, saveSettings } = useAppSettings();
+  const { log } = useAuditLog();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<UserRole>("admin");
@@ -59,6 +61,7 @@ export function UserManagementPanel() {
       ...settings,
       customUsers: [...settings.customUsers, nextUser]
     });
+    log({ actor: actorName, action: role === "admin" ? "Ny admin oprettet" : "Ny medarbejder oprettet", context: normalizedEmail });
 
     setFullName("");
     setEmail("");
@@ -71,6 +74,7 @@ export function UserManagementPanel() {
       ...settings,
       customUsers: settings.customUsers.map((user) => (user.id === id ? { ...user, role: nextRole } : user))
     });
+    log({ actor: actorName, action: "Brugerrolle opdateret", context: `${id}: ${nextRole}` });
     toast.success("Rolle opdateret");
   }
 
@@ -79,6 +83,7 @@ export function UserManagementPanel() {
       ...settings,
       customUsers: settings.customUsers.map((user) => (user.id === id ? { ...user, active: !user.active } : user))
     });
+    log({ actor: actorName, action: "Brugerstatus opdateret", context: id });
   }
 
   return (

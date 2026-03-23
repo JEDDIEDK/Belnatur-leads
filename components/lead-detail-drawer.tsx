@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { CalendarClock, Mail, Phone, UserRound } from "lucide-react";
+import { useAuditLog } from "@/hooks/use-audit-log";
 import type { LeadWithRelations } from "@/types";
 import { useAppSettings } from "@/hooks/use-app-settings";
 import { Button } from "@/components/ui/button";
@@ -26,8 +27,17 @@ const formSchema = z.object({
   assigned_to: z.string()
 });
 
-export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations; employees: { id: string; full_name: string }[] }) {
+export function LeadDetailDrawer({
+  lead,
+  employees,
+  actorName
+}: {
+  lead: LeadWithRelations;
+  employees: { id: string; full_name: string }[];
+  actorName: string;
+}) {
   const { settings } = useAppSettings();
+  const { log } = useAuditLog();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,9 +49,14 @@ export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations;
     }
   });
 
-  const onSubmit = form.handleSubmit(() => {
+  const onSubmit = form.handleSubmit((values) => {
     toast.success("Lead opdateret", {
       description: "Ændringerne er gemt i demo-mode og klar til Supabase integration."
+    });
+    log({
+      actor: actorName,
+      action: "Lead opdateret",
+      context: `${lead.full_name} · ${values.status} · ${values.next_action}`
     });
   });
 
@@ -138,9 +153,12 @@ export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations;
                 type="button"
                 variant="secondary"
                 onClick={() =>
-                  toast.success("Lead markeret som kontaktet", {
-                    description: "Statusændringen er registreret i demo-flowet."
-                  })
+                  {
+                    toast.success("Lead markeret som kontaktet", {
+                      description: "Statusændringen er registreret i demo-flowet."
+                    });
+                    log({ actor: actorName, action: "Lead markeret som kontaktet", context: lead.full_name });
+                  }
                 }
               >
                 Marker som kontaktet
@@ -156,13 +174,16 @@ export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations;
 export function LeadDetailDrawerCard({
   lead,
   employees,
+  actorName,
   children
 }: {
   lead: LeadWithRelations;
   employees: { id: string; full_name: string }[];
+  actorName: string;
   children: React.ReactNode;
 }) {
   const { settings } = useAppSettings();
+  const { log } = useAuditLog();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -174,9 +195,14 @@ export function LeadDetailDrawerCard({
     }
   });
 
-  const onSubmit = form.handleSubmit(() => {
+  const onSubmit = form.handleSubmit((values) => {
     toast.success("Lead opdateret", {
       description: "Ændringerne er gemt i demo-mode og klar til Supabase integration."
+    });
+    log({
+      actor: actorName,
+      action: "Lead opdateret",
+      context: `${lead.full_name} · ${values.status} · ${values.next_action}`
     });
   });
 
@@ -271,9 +297,12 @@ export function LeadDetailDrawerCard({
                 type="button"
                 variant="secondary"
                 onClick={() =>
-                  toast.success("Lead markeret som kontaktet", {
-                    description: "Statusændringen er registreret i demo-flowet."
-                  })
+                  {
+                    toast.success("Lead markeret som kontaktet", {
+                      description: "Statusændringen er registreret i demo-flowet."
+                    });
+                    log({ actor: actorName, action: "Lead markeret som kontaktet", context: lead.full_name });
+                  }
                 }
               >
                 Marker som kontaktet

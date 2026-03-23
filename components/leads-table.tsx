@@ -27,9 +27,10 @@ interface LeadsTableProps {
   leads: LeadWithRelations[];
   employees: Profile[];
   initialQuery?: string;
+  actorName: string;
 }
 
-export function LeadsTable({ leads, employees, initialQuery = "" }: LeadsTableProps) {
+export function LeadsTable({ leads, employees, initialQuery = "", actorName }: LeadsTableProps) {
   const [globalFilter, setGlobalFilter] = React.useState(initialQuery);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [campaignFilter, setCampaignFilter] = React.useState("all");
@@ -92,10 +93,10 @@ export function LeadsTable({ leads, employees, initialQuery = "" }: LeadsTablePr
       {
         id: "actions",
         header: "",
-        cell: ({ row }) => <LeadDetailDrawer lead={row.original} employees={employees} />
+        cell: ({ row }) => <LeadDetailDrawer lead={row.original} employees={employees} actorName={actorName} />
       }
     ],
-    [employees]
+    [actorName, employees]
   );
 
   const table = useReactTable({
