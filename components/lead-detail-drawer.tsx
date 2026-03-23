@@ -8,7 +8,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { CalendarClock, Mail, Phone, UserRound } from "lucide-react";
 import type { LeadWithRelations } from "@/types";
-import { leadStatuses, nextActionOptions } from "@/lib/constants";
+import { useAppSettings } from "@/hooks/use-app-settings";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,7 @@ const formSchema = z.object({
 });
 
 export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations; employees: { id: string; full_name: string }[] }) {
+  const { settings } = useAppSettings();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,7 +89,7 @@ export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations;
               <Select defaultValue={lead.status} onValueChange={(value) => form.setValue("status", value)}>
                 <SelectTrigger><SelectValue placeholder="Vælg status" /></SelectTrigger>
                 <SelectContent>
-                  {leadStatuses.map((status) => (
+                  {settings.statuses.map((status) => (
                     <SelectItem key={status} value={status}>{status}</SelectItem>
                   ))}
                 </SelectContent>
@@ -100,7 +101,7 @@ export function LeadDetailDrawer({ lead, employees }: { lead: LeadWithRelations;
               <Select defaultValue={lead.next_action} onValueChange={(value) => form.setValue("next_action", value)}>
                 <SelectTrigger><SelectValue placeholder="Vælg handling" /></SelectTrigger>
                 <SelectContent>
-                  {nextActionOptions.map((option) => (
+                  {settings.nextActions.map((option) => (
                     <SelectItem key={option} value={option}>{option}</SelectItem>
                   ))}
                 </SelectContent>

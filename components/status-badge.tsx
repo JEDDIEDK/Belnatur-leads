@@ -3,7 +3,11 @@ import type { LeadStatus } from "@/types";
 import { cn } from "@/lib/utils";
 
 export function StatusBadge({ status, className }: { status: LeadStatus; className?: string }) {
-  const style = statusStyles[status];
+  const style = statusStyles[status] ?? {
+    label: status,
+    className: "bg-primary/10 text-primary border-primary/20",
+    icon: statusStyles["Nyt lead"].icon
+  };
   const Icon = style.icon;
 
   return (
