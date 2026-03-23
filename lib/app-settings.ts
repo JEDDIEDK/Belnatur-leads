@@ -10,6 +10,7 @@ export interface NotificationSettings {
 
 export interface AppSettings {
   statuses: string[];
+  statusColors: Record<string, string>;
   nextActions: string[];
   notifications: NotificationSettings;
   customUsers: Profile[];
@@ -27,6 +28,15 @@ export const defaultAppSettings: AppSettings = {
     "Solgt",
     "Tabt"
   ],
+  statusColors: {
+    "Nyt lead": "amber",
+    "Ikke kontaktet": "sand",
+    Kontaktet: "teal",
+    "Afventer svar": "bronze",
+    Booket: "sage",
+    Solgt: "emerald",
+    Tabt: "rose"
+  },
   nextActions: ["Ring op", "Send sms", "Send mail", "Book behandling", "Folg op senere"],
   notifications: {
     newLead: true,
@@ -41,6 +51,7 @@ export const defaultAppSettings: AppSettings = {
 export function normalizeSettings(input: Partial<AppSettings> | null | undefined): AppSettings {
   return {
     statuses: sanitizeList(input?.statuses, defaultAppSettings.statuses),
+    statusColors: normalizeStatusColors(input?.statusColors),
     nextActions: sanitizeList(input?.nextActions, defaultAppSettings.nextActions),
     notifications: {
       ...defaultAppSettings.notifications,
@@ -72,4 +83,11 @@ function normalizeUsers(input: Profile[] | undefined) {
     created_at: user.created_at,
     active: Boolean(user.active)
   }));
+}
+
+function normalizeStatusColors(input: Record<string, string> | undefined) {
+  return {
+    ...defaultAppSettings.statusColors,
+    ...(input ?? {})
+  };
 }

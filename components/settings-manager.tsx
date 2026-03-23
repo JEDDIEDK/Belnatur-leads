@@ -4,11 +4,13 @@ import { useState } from "react";
 import { BellRing, Mail, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAppSettings } from "@/hooks/use-app-settings";
+import { statusColorPresets, type StatusColorPreset } from "@/lib/status-colors";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function SettingsManager() {
   const { settings, ready, saveSettings, resetSettings } = useAppSettings();
@@ -27,7 +29,19 @@ export function SettingsManager() {
   }
 
   function updateStatuses(statuses: string[]) {
-    saveSettings({ ...settings, statuses });
+    const nextStatusColors = { ...settings.statusColors };
+
+    Object.keys(nextStatusColors).forEach((key) => {
+      if (!statuses.includes(key)) delete nextStatusColors[key];
+    });
+
+    statuses.forEach((status) => {
+      if (!nextStatusColors[status]) {
+        nextStatusColors[status] = "sand";
+      }
+    });
+
+    saveSettings({ ...settings, statuses, statusColors: nextStatusColors });
   }
 
   function updateActions(nextActions: string[]) {
@@ -77,12 +91,22 @@ export function SettingsManager() {
       <CardContent className="space-y-6">
         <EditableSection
           title="Statusser"
-          description="Tilpas hvilke statusser teamet kan vælge på leads."
+          description="Tilpas hvilke statusser teamet kan vælge på leads, og vælg farve for hver status."
           items={settings.statuses}
+          statusColors={settings.statusColors}
           draft={statusDraft}
           setDraft={setStatusDraft}
           addItem={addStatus}
           removeItem={(item) => updateStatuses(settings.statuses.filter((status) => status !== item))}
+          onColorChange={(item, color) =>
+            saveSettings({
+              ...settings,
+              statusColors: {
+                ...settings.statusColors,
+                [item]: color
+              }
+            })
+          }
           placeholder="Tilføj ny status"
         />
 
@@ -167,33 +191,63 @@ function EditableSection({
   title,
   description,
   items,
+  statusColors,
   draft,
   setDraft,
   addItem,
   removeItem,
+  onColorChange,
   placeholder
 }: {
   title: string;
   description: string;
   items: string[];
+  statusColors?: Record<string, string>;
   draft: string;
   setDraft: (value: string) => void;
   addItem: () => void;
   removeItem: (item: string) => void;
+  onColorChange?: (item: string, color: StatusColorPreset) => void;
   placeholder: string;
 }) {
   return (
     <div className="rounded-[1.5rem] border bg-white/60 p-5">
       <p className="font-medium text-foreground">{title}</p>
       <p className="mt-2 text-sm text-muted-foreground">{description}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 space-y-3">
         {items.map((item) => (
-          <span key={item} className="inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-sm">
-            <Badge variant="outline">{item}</Badge>
-            <button type="button" onClick={() => removeItem(item)} className="text-muted-foreground hover:text-foreground">
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          </span>
+          <div key={item} className="flex flex-col gap-3 rounded-[1.25rem] border bg-white p-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-2">
+              <Badge
+                variant="outline"
+                className={statusColors ? statusColorPresets[(statusColors[item] as StatusColorPreset) ?? "sand"].className : ""}
+              >
+                {item}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              {statusColors && onColorChange ? (
+                <Select
+                  value={(statusColors[item] as StatusColorPreset) ?? "sand"}
+                  onValueChange={(value) => onColorChange(item, value as StatusColorPreset)}
+                >
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Farve" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(statusColorPresets).map(([key, preset]) => (
+                      <SelectItem key={key} value={key}>
+                        {preset.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : null}
+              <button type="button" onClick={() => removeItem(item)} className="text-muted-foreground hover:text-foreground">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
         ))}
       </div>
       <div className="mt-4 flex gap-3">
