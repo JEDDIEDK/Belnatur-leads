@@ -4,11 +4,13 @@ import { da } from "date-fns/locale";
 import { ArrowRight, CalendarClock, Sparkles } from "lucide-react";
 import { CampaignChart, VolumeChart } from "@/components/chart-card";
 import { KpiCard } from "@/components/kpi-card";
+import { LeadDetailDrawerCard } from "@/components/lead-detail-drawer";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCampaignPerformance, getDashboardKpis, getLatestLeads, getSessionUser, getUpcomingReminders } from "@/lib/data";
+import { profiles } from "@/lib/demo-data";
 
 export default function DashboardPage() {
   const user = getSessionUser();
@@ -92,19 +94,24 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {reminders.map((lead) => (
-              <div key={lead.id} className="rounded-[1.5rem] border border-border/70 bg-white/60 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium text-foreground">{lead.full_name}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">{lead.next_action} · {lead.assignee.full_name}</p>
+              <LeadDetailDrawerCard key={lead.id} lead={lead} employees={profiles}>
+                <button
+                  type="button"
+                  className="w-full rounded-[1.5rem] border border-border/70 bg-white/60 p-4 text-left transition hover:bg-white/80"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-medium text-foreground">{lead.full_name}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{lead.next_action} · {lead.assignee.full_name}</p>
+                    </div>
+                    <Sparkles className="h-5 w-5 text-primary" />
                   </div>
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </div>
-                <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                  <CalendarClock className="h-4 w-4" />
-                  {lead.reminder_at ? format(new Date(lead.reminder_at), "d. MMM yyyy, HH:mm", { locale: da }) : "Ingen reminder"}
-                </div>
-              </div>
+                  <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                    <CalendarClock className="h-4 w-4" />
+                    {lead.reminder_at ? format(new Date(lead.reminder_at), "d. MMM yyyy, HH:mm", { locale: da }) : "Ingen reminder"}
+                  </div>
+                </button>
+              </LeadDetailDrawerCard>
             ))}
           </CardContent>
         </Card>
