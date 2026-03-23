@@ -8,11 +8,20 @@ export interface NotificationSettings {
   emailNotifications: boolean;
 }
 
+export interface NotificationLabels {
+  newLead: string;
+  reminderDue: string;
+  statusChanged: string;
+  leadAssigned: string;
+  emailNotifications: string;
+}
+
 export interface AppSettings {
   statuses: string[];
   statusColors: Record<string, string>;
   nextActions: string[];
   notifications: NotificationSettings;
+  notificationLabels: NotificationLabels;
   customUsers: Profile[];
 }
 
@@ -45,6 +54,13 @@ export const defaultAppSettings: AppSettings = {
     leadAssigned: true,
     emailNotifications: false
   },
+  notificationLabels: {
+    newLead: "Nyt lead",
+    reminderDue: "Reminder udløber",
+    statusChanged: "Status ændret",
+    leadAssigned: "Lead tildelt",
+    emailNotifications: "E-mail notifikationer"
+  },
   customUsers: []
 };
 
@@ -56,6 +72,10 @@ export function normalizeSettings(input: Partial<AppSettings> | null | undefined
     notifications: {
       ...defaultAppSettings.notifications,
       ...(input?.notifications ?? {})
+    },
+    notificationLabels: {
+      ...defaultAppSettings.notificationLabels,
+      ...(input?.notificationLabels ?? {})
     },
     customUsers: normalizeUsers(input?.customUsers)
   };
