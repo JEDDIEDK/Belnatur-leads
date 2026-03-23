@@ -13,7 +13,7 @@ export function AppShell({
   return (
     <div className="min-h-screen p-3 md:p-6">
       <div className="mx-auto flex max-w-[1600px] gap-6">
-        <Sidebar />
+        <Sidebar user={user} />
         <div className="flex-1 space-y-6">
           <Topbar user={user} />
           <main>{children}</main>

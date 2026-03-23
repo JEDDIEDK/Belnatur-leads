@@ -2,19 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Bell, LayoutDashboard, Settings, Users2 } from "lucide-react";
+import { BarChart3, Bell, ClipboardList, LayoutDashboard, Settings, Users2 } from "lucide-react";
 import { BelnaturLogo } from "@/components/belnatur-logo";
 import { cn } from "@/lib/utils";
+import type { Profile } from "@/types";
 
 const navigation = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/leads", label: "Leads", icon: Users2 },
   { href: "/campaigns", label: "Kampagner", icon: BarChart3 },
-  { href: "/notifications", label: "Notifikationer", icon: Bell },
-  { href: "/settings", label: "Settings", icon: Settings }
+  { href: "/notifications", label: "Notifikationer", icon: Bell }
 ];
 
-export function Sidebar() {
+const adminNavigation = [
+  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/audit-log", label: "Hændelseslog", icon: ClipboardList }
+];
+
+export function Sidebar({ user }: { user: Profile }) {
   const pathname = usePathname();
 
   return (
@@ -45,6 +50,31 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        {user.role === "admin" ? (
+          <div className="pt-4">
+            <p className="px-4 pb-2 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">Admin</p>
+            <div className="space-y-2">
+              {adminNavigation.map((item) => {
+                const Icon = item.icon;
+                const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-all",
+                      active ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:bg-white/70 hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
       </nav>
 
       <div className="mt-10 rounded-[1.5rem] border border-white/40 bg-white/60 p-4">

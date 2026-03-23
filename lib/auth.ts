@@ -25,6 +25,16 @@ export async function requireAuth() {
   return session;
 }
 
+export async function requireAdmin() {
+  const session = await requireAuth();
+
+  if (session.role !== "admin") {
+    redirect("/");
+  }
+
+  return session;
+}
+
 export async function signInAction(formData: FormData) {
   "use server";
   const store = await cookies();
